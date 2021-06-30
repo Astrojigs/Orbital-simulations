@@ -1,9 +1,8 @@
 # Orbital Simulations
 The project is focused on simulating the motion of bodies obeying inverse sqaure law.
 
-### Will update soon
 
-#### Description( of *above function*):
+
 
 ```
 #Main function :
@@ -38,14 +37,15 @@ def step(mass:'arr', x0:'arr',y0:'arr',vx0:'arr',vy0: 'arr',dt=0.1, G = 1):
 
     return x1,y1,np.array(vx1),np.array(vy1)
 ```
+#### Description( of *above function*):
 
 The `step()` function will take the "*initial positions/previous positions*" of the bodies as inputs and give their respective "*present positions*". This is done in the following way:
 1) The function `step()` takes:
 - `mass` (*masses of all the bodies in one array*)
 - `x0` (*x position of all the bodies in one array*)
 - `y0` (*y position of all the bodies in one array*)
-- `vx0` (*x component of velocties for all the bodies, also in an array*)
-- `vy0` (*y component of velocties for all the bodies, also in an array*)
+- `vx0` (*x component of velocities for all the bodies, also in an array*)
+- `vy0` (*y component of velocities for all the bodies, also in an array*)
 - `dt` (*component of time*)
 - `G` (*Gravitational Constant (for visualization purposes <u>G=1</u>*)
 
