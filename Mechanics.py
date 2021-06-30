@@ -13,6 +13,12 @@ class AnimatedScatter(object):
         self.ani = animation.FuncAnimation(self.fig, self.update, interval = 5,
                                         init_func=self.setup_plot, blit=True)
 
+    def setup_plot(self):
+        """Initial drawing of the scatter plot."""
+        x,y,s,c = next(self.stream).T
+        self.scat = self.ax.scatter(x,y,c=c,s=s,vmin=0,vmax=1,
+        cmap='jet',edgecolor='k')
+    self.ax.axis([-10])
 
 #Function to give the next positions:
 def step(mass:'arr', x0:'arr', y0:'arr', vx0:'arr', vy0:'arr',dt=0.1,G=1):
