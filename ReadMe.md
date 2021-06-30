@@ -1,13 +1,11 @@
 # Orbital Simulations
-The project is focused on simulating the motion of bodies obeying inverse sqaure law.
+The project is focused on simulating the motion of bodies obeying inverse square law.
 
 
 
 
 ```
 #Main function :
-# X0 -> X1
-# @vectorize(['float32(float32, float32, float32, float32, float32, float32)'], target='cuda')
 def step(mass:'arr', x0:'arr',y0:'arr',vx0:'arr',vy0: 'arr',dt=0.1, G = 1):
 
     x1 = x0 + vx0*dt
