@@ -1,4 +1,10 @@
-# Orbital Simulations
+
+
+https://user-images.githubusercontent.com/63223240/129399602-81a26369-97f0-449a-9fa4-736b93f60c0c.mp4
+
+
+
+# Orbital Simulations and Potential fields
 The project is focused on simulating the motion of bodies obeying inverse square law.
 
 
@@ -58,3 +64,7 @@ The `step()` function will take the "*initial positions/previous positions*" of 
 # Example
 
 https://user-images.githubusercontent.com/63223240/125155924-5e5abb00-e180-11eb-9e84-faf8f90856f7.mp4
+
+
+# Update:
+**Added the file where Gravitational potentials are plotted**
