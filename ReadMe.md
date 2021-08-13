@@ -1,7 +1,5 @@
 
 
-https://user-images.githubusercontent.com/63223240/129399602-81a26369-97f0-449a-9fa4-736b93f60c0c.mp4
-
 
 
 # Orbital Simulations and Potential fields
@@ -68,3 +66,5 @@ https://user-images.githubusercontent.com/63223240/125155924-5e5abb00-e180-11eb-
 
 # Update:
 **Added the file where Gravitational potentials are plotted**
+
+https://user-images.githubusercontent.com/63223240/129399602-81a26369-97f0-449a-9fa4-736b93f60c0c.mp4
