@@ -53,20 +53,8 @@ The `step()` function will take the "*initial positions/previous positions*" of 
 3) We make a loop to calculate the acceleration and update the velocities. This process loops over the number of bodies and finding their acceleration using <br>the Newton's Gravitation formula: $ F = ma = \frac{G*M*m}{R^2}$. <br> After this, we find the component of acceleration $a_x, a_y$ .<br> Then we append (*add*) $v_{x_1} = v_{x_0} + a_x*dt$ to the `vx1 =[]` list (similarly for vy1).
 
 
-# Example 1
 
 
-
-https://user-images.githubusercontent.com/63223240/125156123-7c74eb00-e181-11eb-82a8-2726cc34dc27.mp4
-
-
-
-
-
-# Example 2
-
-https://user-images.githubusercontent.com/63223240/125156087-551e1e00-e181-11eb-8fd6-6459f8b087d9.mp4
-
-# Example 3
+# Example
 
 https://user-images.githubusercontent.com/63223240/125155924-5e5abb00-e180-11eb-9e84-faf8f90856f7.mp4
