@@ -15,21 +15,23 @@ class Rectangle:
         self.y = y
         self.w = w
         self.h = h
-        self.west_edge, self.east_edge = x - w, x + w
-        self.north_edge, self.south_edge = y+h, y-h
+        self.west_edge, self.east_edge = x - w/2, x + w/2
+        self.north_edge, self.south_edge = y-h/2, y+h/2
 
     def contains(self,point):
-        return (point.x >= self.west_edge and point.x <= self.east_edge + self.w and
-        point.y >= self.north_edge and point.y <= self.south_edge)
+        return (point.x >= self.west_edge and point.x < self.east_edge and
+        point.y >= self.north_edge and point.y < self.south_edge)
 
     def show(self, axis):
         #axis.add_patch(patches.Rectangle((self.x-self.w,self.y-self.h),self.w*2,self.h*2,fill=False))
         x1, y1 = self.west_edge,self.north_edge
         x2, y2 = self.east_edge, self.south_edge
-        axis.plot([x1,x2,x2,x1,x1],[y1,y1,y2,y2,y1], c='black', lw=1)
-
+        # axis.plot([x1,x2,x2,x1,x1],[y1,y1,y2,y2,y1], c='black', lw=1)
+        axis.add_patch(patches.Rectangle((self.west_edge,self.south_edge),
+        (self.east_edge-self.west_edge),
+        (self.north_edge-self.south_edge),fill=False))
 class Quadtree:
-    def __init__(self,boundary,n = 4, depth=0):
+    def __init__(self,boundary,n = 4):
 
         self.boundary = boundary
 
@@ -40,8 +42,6 @@ class Quadtree:
         # Keep track of points:
         self.points = []
 
-        # Depth
-        self.depth = depth
         self.divided = False
 
     def subdivide(self):
@@ -51,16 +51,16 @@ class Quadtree:
         w = self.boundary.w/2
         h = self.boundary.h/2
 
-        ne = Rectangle(x + w/2,y + h/2, w,h)
-        self.northeast = Quadtree(ne,self.capacity, self.depth+1);
-        nw = Rectangle(x - w/2,y + h/2, w,h)
-        self.northwest = Quadtree(nw,self.capacity,self.depth+1);
-        se = Rectangle(x + w/2,y - h/2, w,h)
-        self.southeast = Quadtree(se,self.capacity,self.depth+1);
-        sw = Rectangle(x - w/2,y - h/2, w,h)
-        self.southwest = Quadtree(sw,self.capacity,self.depth+1);
+        ne = Rectangle(x + w/2,y - h/2, w,h)
+        self.northeast = Quadtree(ne,self.capacity);
+        nw = Rectangle(x - w/2,y - h/2, w,h)
+        self.northwest = Quadtree(nw,self.capacity);
+        se = Rectangle(x + w/2,y + h/2, w,h)
+        self.southeast = Quadtree(se,self.capacity);
+        sw = Rectangle(x - w/2,y + h/2, w,h)
+        self.southwest = Quadtree(sw,self.capacity);
 
-        self.divided=True
+        self.divided = True
 
     def insert(self,point):
 
@@ -82,8 +82,7 @@ class Quadtree:
             print('divided')
             self.subdivide()
 
-        return
-        (self.northeast.insert(point) or
+        return (self.northeast.insert(point) or
         self.northwest.insert(point) or
         self.southeast.insert(point) or
         self.southwest.insert(point))

@@ -14,8 +14,8 @@ for i in range(500):
     p = utils.Point(x,y)
     ax.scatter(p.x,p.y,s=1,c='black')
     qt.insert(p)
-ax.set_xlim(-200,800)
-ax.set_ylim(-200,800)
+ax.set_xlim(0,400)
+ax.set_ylim(0,400)
 
 qt.show(ax)
 plt.show()
