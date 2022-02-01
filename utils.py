@@ -14,8 +14,6 @@ class Rectangle:
         self.h = h
 
     def contains(self,point):
-        print(point.x >= self.x-self.w and point.x <= self.x + self.w and
-        point.y >= self.y - self.h and point.y <= self.y + self.h)
         return (point.x >= self.x-self.w and point.x <= self.x + self.w and
         point.y >= self.y - self.h and point.y <= self.y + self.h)
 
@@ -40,8 +38,8 @@ class Quadtree:
 
         x = self.boundary.x
         y = self.boundary.y
-        w = self.boundary.w/2
-        h = self.boundary.h/2
+        w = self.boundary.w
+        h = self.boundary.h
 
         ne = Rectangle(x + w/2,y - h/2, w,h)
         self.northeast = Quadtree(ne,self.capacity);
@@ -64,10 +62,10 @@ class Quadtree:
         if not self.divided:
             self.subdivide()
 
-            return (self.northeast.insert(point) or
-            self.northwest.insert(point) or
-            self.southeast.insert(point) or
-            self.southwest.insert(point))
+        self.northeast.insert(point)
+        self.northwest.insert(point)
+        self.southeast.insert(point)
+        self.southwest.insert(point)
     def show(self,axis):
         axis.add_patch(patches.Rectangle((self.boundary.x-self.boundary.w, self.boundary.y-self.boundary.h),
         self.boundary.w*2, self.boundary.h*2,
