@@ -8,20 +8,28 @@ class Point:
 
 class Rectangle:
     def __init__(self,x,y,w,h):
+        # x,y = center of the Rectangle
+        # w = distance from center to horizontal edge
+        # h = distance from center to vertical edge
         self.x = x
         self.y = y
         self.w = w
         self.h = h
+        self.west_edge, self.east_edge = x - w, x + w
+        self.north_edge, self.south_edge = y+h, y-h
 
     def contains(self,point):
-        return (point.x >= self.x-self.w and point.x <= self.x + self.w and
-        point.y >= self.y - self.h and point.y <= self.y + self.h)
+        return (point.x >= self.west_edge and point.x <= self.east_edge + self.w and
+        point.y >= self.north_edge and point.y <= self.south_edge)
 
     def show(self, axis):
-        axis.add_patch(patches.Rectangle((self.x-self.w,self.y-self.h),self.w*2,self.h*2,fill=False))
+        #axis.add_patch(patches.Rectangle((self.x-self.w,self.y-self.h),self.w*2,self.h*2,fill=False))
+        x1, y1 = self.west_edge,self.north_edge
+        x2, y2 = self.east_edge, self.south_edge
+        axis.plot([x1,x2,x2,x1,x1],[y1,y1,y2,y2,y1], c='black', lw=1)
 
 class Quadtree:
-    def __init__(self,boundary,n):
+    def __init__(self,boundary,n = 4, depth=0):
 
         self.boundary = boundary
 
@@ -32,53 +40,58 @@ class Quadtree:
         # Keep track of points:
         self.points = []
 
+        # Depth
+        self.depth = depth
         self.divided = False
 
     def subdivide(self):
 
         x = self.boundary.x
         y = self.boundary.y
-        w = self.boundary.w
-        h = self.boundary.h
+        w = self.boundary.w/2
+        h = self.boundary.h/2
 
-        ne = Rectangle(x + w/2,y - h/2, w,h)
-        self.northeast = Quadtree(ne,self.capacity);
-        nw = Rectangle(x - w/2,y - h/2, w,h)
-        self.northwest = Quadtree(nw,self.capacity);
-        se = Rectangle(x + w/2,y + h/2, w,h)
-        self.southeast = Quadtree(se,self.capacity);
-        sw = Rectangle(x - w/2,y + h/2, w,h)
-        self.southwest = Quadtree(sw,self.capacity);
+        ne = Rectangle(x + w/2,y + h/2, w,h)
+        self.northeast = Quadtree(ne,self.capacity, self.depth+1);
+        nw = Rectangle(x - w/2,y + h/2, w,h)
+        self.northwest = Quadtree(nw,self.capacity,self.depth+1);
+        se = Rectangle(x + w/2,y - h/2, w,h)
+        self.southeast = Quadtree(se,self.capacity,self.depth+1);
+        sw = Rectangle(x - w/2,y - h/2, w,h)
+        self.southwest = Quadtree(sw,self.capacity,self.depth+1);
 
         self.divided=True
 
     def insert(self,point):
-        if self.boundary.contains(point) != True:
-            return
 
-        if (len(self.points) < self.capacity):
+        # If the point isn't in the boundary then stop!
+        if self.boundary.contains(point) != True:
+            return False
+
+        # Check if the number of points exceed the capacity
+        if len(self.points) < self.capacity:
+            # if the point does not exceed then add the point,
+            # to the list of points in the boundary
             self.points.append(point)
-        # If there is no division yet, then divide
+            return True
+        # If the number of points exceed the given capacity then
+        # subdivide the rectangular boundary into four parts
+
+        # subdivide boundary
         if not self.divided:
+            print('divided')
             self.subdivide()
 
-        self.northeast.insert(point)
-        self.northwest.insert(point)
-        self.southeast.insert(point)
-        self.southwest.insert(point)
-    def show(self,axis):
-        axis.add_patch(patches.Rectangle((self.boundary.x-self.boundary.w, self.boundary.y-self.boundary.h),
-        self.boundary.w*2, self.boundary.h*2,
-         fill=False))
+        return
+        (self.northeast.insert(point) or
+        self.northwest.insert(point) or
+        self.southeast.insert(point) or
+        self.southwest.insert(point))
 
+    def show(self,axis):
         self.boundary.show(axis)
         if self.divided:
-
             self.northeast.show(axis)
             self.northwest.show(axis)
             self.southeast.show(axis)
             self.southwest.show(axis)
-        count=0
-        for p in self.points:
-            count+=1
-            print(count)
