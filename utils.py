@@ -23,14 +23,21 @@ class Rectangle:
         return (point.x >= self.west_edge and point.x <= self.east_edge and
         point.y >= self.north_edge and point.y <= self.south_edge)
 
-    def show(self, axis):
+    def intersects(self,other):
+        """Does the other Rectangle object intersect with this one?"""
+        return not (other.west_edge > self.east_edge or
+                    other.east_edge < self.west_edge or
+                    other.north_edge > self.south_edge or
+                    other.south_edge < self.north_edge)
+
+    def show(self, axis,color='black'):
         #axis.add_patch(patches.Rectangle((self.x-self.w,self.y-self.h),self.w*2,self.h*2,fill=False))
         x1, y1 = self.west_edge,self.north_edge
         x2, y2 = self.east_edge, self.south_edge
         # axis.plot([x1,x2,x2,x1,x1],[y1,y1,y2,y2,y1], c='black', lw=1)
         axis.add_patch(patches.Rectangle((self.west_edge,self.south_edge),
         (self.east_edge-self.west_edge),
-        (self.north_edge-self.south_edge),fill=False))
+        (self.north_edge-self.south_edge),fill=False,color=color))
 class Quadtree:
     def __init__(self,boundary,n = 4):
 
@@ -80,13 +87,33 @@ class Quadtree:
 
         # subdivide boundary
         if not self.divided:
-            print('divided')
             self.subdivide()
 
         return (self.northeast.insert(point) or
         self.northwest.insert(point) or
         self.southeast.insert(point) or
         self.southwest.insert(point))
+
+
+    def query(self, boundary, found_points):
+        """Find points in the quadtree that lie within a boundary."""
+        if not self.boundary.intersects(boundary):
+            # if the domain of this node does not interesect the search
+            # region, we don't need to look in it for points.
+            return False
+
+        # Search this node's point to see if they lie within boundary
+        for point in self.points:
+            if boundary.contains(point):
+                found_points.append(point)
+        # if this node has children, search them too.
+        if self.divided:
+            self.northeast.query(boundary,found_points)
+            self.northwest.query(boundary,found_points)
+            self.southeast.query(boundary,found_points)
+            self.southwest.query(boundary,found_points)
+        return found_points
+
 
     def show(self,axis):
         self.boundary.show(axis)
