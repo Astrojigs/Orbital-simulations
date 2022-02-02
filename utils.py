@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+
 class Point:
     def __init__(self,x,y):
         self.x = x
@@ -19,17 +20,17 @@ class Rectangle:
         self.north_edge, self.south_edge = y-h/2, y+h/2
 
     def contains(self,point):
-        return (point.x >= self.west_edge and point.x < self.east_edge and
-        point.y >= self.north_edge and point.y < self.south_edge)
+        return (point.x >= self.west_edge and point.x <= self.east_edge and
+        point.y >= self.north_edge and point.y <= self.south_edge)
 
     def show(self, axis):
         #axis.add_patch(patches.Rectangle((self.x-self.w,self.y-self.h),self.w*2,self.h*2,fill=False))
         x1, y1 = self.west_edge,self.north_edge
         x2, y2 = self.east_edge, self.south_edge
-        # axis.plot([x1,x2,x2,x1,x1],[y1,y1,y2,y2,y1], c='black', lw=1)
-        axis.add_patch(patches.Rectangle((self.west_edge,self.south_edge),
-        (self.east_edge-self.west_edge),
-        (self.north_edge-self.south_edge),fill=False))
+        axis.plot([x1,x2,x2,x1,x1],[y1,y1,y2,y2,y1], c='black', lw=1)
+        # axis.add_patch(patches.Rectangle((self.west_edge,self.south_edge),
+        # (self.east_edge-self.west_edge),
+        # (self.north_edge-self.south_edge),fill=False))
 class Quadtree:
     def __init__(self,boundary,n = 4):
 
