@@ -12,7 +12,7 @@ center_y = 0
 boundary = utils.Rectangle(center_x,center_y,width,height)
 qt = utils.Quadtree(boundary, 4)
 
-for i in range(5500):
+for i in range(550):
     x = np.random.randint(0,400)
     y = np.random.randint(0,400)
 

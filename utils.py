@@ -10,8 +10,8 @@ class Point:
 class Rectangle:
     def __init__(self,x,y,w,h):
         # x,y = center of the Rectangle
-        # w = distance from center to horizontal edge
-        # h = distance from center to vertical edge
+        # w = edge to edge horizontal distance
+        # h = edge to edge vertical distance
         self.x = x
         self.y = y
         self.w = w
@@ -27,10 +27,10 @@ class Rectangle:
         #axis.add_patch(patches.Rectangle((self.x-self.w,self.y-self.h),self.w*2,self.h*2,fill=False))
         x1, y1 = self.west_edge,self.north_edge
         x2, y2 = self.east_edge, self.south_edge
-        axis.plot([x1,x2,x2,x1,x1],[y1,y1,y2,y2,y1], c='black', lw=1)
-        # axis.add_patch(patches.Rectangle((self.west_edge,self.south_edge),
-        # (self.east_edge-self.west_edge),
-        # (self.north_edge-self.south_edge),fill=False))
+        # axis.plot([x1,x2,x2,x1,x1],[y1,y1,y2,y2,y1], c='black', lw=1)
+        axis.add_patch(patches.Rectangle((self.west_edge,self.south_edge),
+        (self.east_edge-self.west_edge),
+        (self.north_edge-self.south_edge),fill=False))
 class Quadtree:
     def __init__(self,boundary,n = 4):
 
