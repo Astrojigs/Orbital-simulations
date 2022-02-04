@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
 class Point:
-    def __init__(self,x,y):
+    def __init__(self,x,y, mass=1):
         self.x = x
         self.y = y
-
+        self.mass = mass
 class Rectangle:
     def __init__(self,x,y,w,h):
         # x,y = center of the Rectangle
@@ -39,6 +39,9 @@ class Rectangle:
         (self.east_edge-self.west_edge),
         (self.north_edge-self.south_edge),fill=False,color=color))
 class Quadtree:
+    Mass = 0
+    CenterOfMass_x = 0
+    CenterOfMass_y = 0
     def __init__(self,boundary,n = 4):
 
         self.boundary = boundary
@@ -113,6 +116,34 @@ class Quadtree:
             self.southeast.query(boundary,found_points)
             self.southwest.query(boundary,found_points)
         return found_points
+
+    def compute_mass_distribution(self):
+        Mass = 0
+        CenterOfMass_x = 0
+        CenterOfMass_y = 0
+
+        if len(self.points) <= 4 and len(self.points)!=0:
+            for i in range(len(self.points)):
+                CenterOfMass_x += self.points[i].x*self.points[i].mass
+                CenterOfMass_y += self.points[i].y*self.points[i].mass
+                Mass += self.points[i].mass
+                return Mass, CenterOfMass_x/Mass, CenterOfMass_y/Mass
+
+        else:
+            # Compute the center of mass based on the masses
+            # of all child quadrants and the center of mass as
+            # the center of mass of the child quadrants weights with their mass
+            if self.divided:
+                ne_mass,ne_com_x,ne_com_y = self.northeast.compute_mass_distribution()
+                nw_mass,nw_com_x,nw_com_y = self.northwest.compute_mass_distribution()
+                se_mass,se_com_x,se_com_y = self.southeast.compute_mass_distribution()
+                sw_mass,sw_com_x,sw_com_y = self.southwest.compute_mass_distribution()
+                Mass = ne_mass + nw_mass + se_mass + sw_mass
+                CenterOfMass_x = ne_mass*ne_com_x + nw_mass*nw_com_x + se_mass*se_com_x + sw_mass*se_com_x
+                CenterOfMass_y = ne_mass*ne_com_y + nw_mass*nw_com_y + se_mass*se_com_y + sw_mass*se_com_y
+
+                return Mass, CenterOfMass_x/Mass, CenterOfMass_y/Mass
+
 
 
     def show(self,axis):

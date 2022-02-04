@@ -15,11 +15,11 @@ qt = utils.Quadtree(boundary, 4)
 for i in range(100):
     x = np.random.randint(0,400)
     y = np.random.randint(0,400)
-
     p = utils.Point(x,y)
     ax.scatter(p.x,p.y,s=1,c='black')
     qt.insert(p)
 
+print(qt.compute_mass_distribution())
 # give me points in this region
 region = utils.Rectangle(100,100,108,50)
 found_points = []
