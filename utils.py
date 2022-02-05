@@ -3,10 +3,12 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
 class Point:
-    def __init__(self,x,y, mass=1):
+    def __init__(self,x,y, mass=1,vx=0,vy=0):
         self.x = x
         self.y = y
         self.mass = mass
+        self.vx = vx
+        self.vy = vy
 class Rectangle:
     def __init__(self,x,y,w,h):
         # x,y = center of the Rectangle
@@ -144,7 +146,29 @@ class Quadtree:
 
                 return Mass, CenterOfMass_x/Mass, CenterOfMass_y/Mass
 
+    def distance(x1,y1,x2,y2):
+        return (np.sqrt((x2-x1)**2 + (y2-y1)**2))
 
+    def calculate_force(self, point,G=0.1,theta=1.1):
+        force = 0
+        if len(self.points) <=4 and len(self.points)!=0:
+            for i in range(len(self.points)):
+                force += G*self.points[i].mass*point.mass/self.distance(self.points[i].x,self.points[i].y,
+                point.x,point.y)
+        else:
+            mass_node, r_x,r_y = self.compute_mass_distribution()
+            r = np.sqrt(r_x**2 + r_y**2)
+            d = abs(self.north_edge - self.south_edge)
+            if d/r <theta:
+                force = G*point.mass*self.compute_mass_distribution()[0]/self.distance(point.x,point.y,
+                self.compute_mass_distribution()[1],self.compute_mass_distribution()[2])
+            else:
+                # Compute force on child node
+                if self.divided:
+                    self.northwest.calculate_force(self, point, G, theta)
+                    self.northeast.calculate_force(self, point, G, theta)
+                    self.southwest.calculate_force(self, point, G, theta)
+                    self.southeast.calculate_force(self, point, G, theta)
 
     def show(self,axis):
         self.boundary.show(axis)
