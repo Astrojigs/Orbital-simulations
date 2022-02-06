@@ -12,13 +12,14 @@ center_y = 200
 boundary = utils.Rectangle(center_x,center_y,width,height)
 qt = utils.Quadtree(boundary, 4)
 
-for i in range(1000):
+for i in range(100):
     x = np.random.randint(0,400)
     y = np.random.randint(0,400)
     p = utils.Point(x,y)
     ax.scatter(p.x,p.y,s=1,c='black')
     qt.insert(p)
 
+print(f"mass = {qt.compute_mass_distribution()}")
 ax.scatter(qt.compute_mass_distribution()[1],qt.compute_mass_distribution()[2],s=100,c='blue')
 # give me points in this region
 region = utils.Rectangle(100,100,108,50)
