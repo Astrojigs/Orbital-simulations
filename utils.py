@@ -169,7 +169,6 @@ class Quadtree:
             return acc_x, acc_y
 
         else:
-            if self.points[i].x != point.x and self.points[i].y != point.y:
                 mass_node, r_x,r_y = self.compute_mass_distribution()
                 x_dist = r_x - point.x
                 y_dist = r_y - point.y
