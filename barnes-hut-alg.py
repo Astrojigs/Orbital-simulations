@@ -10,7 +10,7 @@ height = 400
 center_x = 200
 center_y = 200
 boundary = utils.Rectangle(center_x,center_y,width,height)
-qt = utils.Quadtree(boundary, 4)
+qt = utils.Quadtree(boundary, 1)
 
 for i in range(100):
     x = np.random.randint(0,400)
