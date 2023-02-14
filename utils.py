@@ -1,29 +1,70 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+from IPython.display import clear_output
+import math
+import matplotlib.colors as mcolors
+
 
 class Point:
-    def __init__(self,x,y, mass=1,vx=0,vy=0):
+    """
+    Create a point in space.
+    """
+    def __init__(self,x,y, mass=1.0,vx=0,vy=0, acc_x=0, acc_y=0, color=None):
+        """
+        Each point will have:
+        mass (default 1.0),
+        vx = velocity x_component (default = 0),
+        vy = velocity y_component (default = 0),
+        acc_x = acceleration x_component (default = 0),
+        acc_y = acceleration y_component (default = 0)"""
         self.x = x
         self.y = y
         self.mass = mass
         self.vx = vx
         self.vy = vy
+        self.acc_x = acc_x
+        self.acc_y = acc_y
+        self.color = color
+
+    def update_position(self, quadtree,dt):
+        """
+        Update x,y component of position and velocity of a point.
+
+        Details:
+        Uses returned value from
+        `quadtree.calculate_force()` method
+        """
+
+        # Calculate the net force on the point
+        force_x, force_y = quadtree.calculate_force(self)
+        # Update the position
+        self.vx += force_x / self.mass
+        self.vy += force_y / self.mass
+        self.x += self.vx*dt
+        self.y += self.vy*dt
+
 class Rectangle:
+    """
+    Create a boundary (rectangle) within which a Quadtree can function.
+    """
     def __init__(self,x,y,w,h):
-        # x,y = center of the Rectangle
-        # w = edge to edge horizontal distance
-        # h = edge to edge vertical distance
+        """
+        x = center of the Rectangle
+        y = center of the Rectangle
+        w = width of the rectangle
+        h = height of the rectangle
+        """
         self.x = x
         self.y = y
         self.w = w
         self.h = h
         self.west_edge, self.east_edge = x - w/2, x + w/2
-        self.north_edge, self.south_edge = y-h/2, y+h/2
+        self.north_edge, self.south_edge = y + h/2, y - h/2
 
     def contains(self,point):
         return (point.x >= self.west_edge and point.x <= self.east_edge and
-        point.y >= self.north_edge and point.y <= self.south_edge)
+        point.y <= self.north_edge and point.y >= self.south_edge)
 
     def intersects(self,other):
         """Does the other Rectangle object intersect with this one?"""
@@ -32,182 +73,278 @@ class Rectangle:
                     other.north_edge > self.south_edge or
                     other.south_edge < self.north_edge)
 
-    def show(self, axis,color='black'):
-        #axis.add_patch(patches.Rectangle((self.x-self.w,self.y-self.h),self.w*2,self.h*2,fill=False))
+    def show(self, axis,color='red'):
         x1, y1 = self.west_edge,self.north_edge
         x2, y2 = self.east_edge, self.south_edge
-        # axis.plot([x1,x2,x2,x1,x1],[y1,y1,y2,y2,y1], c='black', lw=1)
-        axis.add_patch(patches.Rectangle((self.west_edge,self.south_edge),
-        (self.east_edge-self.west_edge),
-        (self.north_edge-self.south_edge),fill=False,color=color))
+        axis.plot([x1,x2,x2,x1,x1],[y1,y1,y2,y2,y1], c=color, lw=1)
+
+
+
 class Quadtree:
 
-    def __init__(self,boundary,n = 4):
-
+    def __init__(self,boundary, G,theta_, n = 1):
+        """
+        Creates a Quadtree:
+        boundary: Rectangle instance
+        n = capacity
+            choosing n = 1, i.e. if particle number crosses 1 than sub-divide
+        G = gravitational constant
+        theta_ = barnes hut algo theta (default value = 1)
+        """
         self.boundary = boundary
 
-        # choosing capacity(n) = 4, i.e. if particle number crosses 4 than sub-divide
+        # choosing capacity(n) = 1, i.e. if particle number crosses 1 than sub-divide
         # When do i choose that i need to sub-divide
         self.capacity = n
 
         # Keep track of points:
         self.points = []
-
+        self.quads = [None, None, None, None]
         self.divided = False
-        self.Mass = 0
-        self.CenterOfMass_x = 0
-        self.CenterOfMass_y = 0
+        self.mass = 0.0
+        self.G = G
+        self.theta_ = theta_
+        self.center_of_mass_x = 0.0
+        self.center_of_mass_y = 0.0
+
+
+    def create_quadtree(self):
+        """
+        Returns a new quadtree"""
+        return Quadtree(self.boundary,self.G,self.theta_,n=self.capacity)
 
     def subdivide(self):
+        """
+        Subdivides the region into four parts
+               1  |  2
+             ____ |____
+                  |
+               3  |  4
 
+               quad[0] = 1st quadrant (north west)
+               quad[1] = 2nd quadrant (north east)
+               quad[2] = 3rd quadrant (south west)
+               quad[3] = 4th quadrant (south east)
+        """
         x = self.boundary.x
         y = self.boundary.y
         w = self.boundary.w/2
         h = self.boundary.h/2
 
-        ne = Rectangle(x + w/2,y - h/2, w,h)
-        self.northeast = Quadtree(ne,self.capacity);
-        nw = Rectangle(x - w/2,y - h/2, w,h)
-        self.northwest = Quadtree(nw,self.capacity);
-        se = Rectangle(x + w/2,y + h/2, w,h)
-        self.southeast = Quadtree(se,self.capacity);
-        sw = Rectangle(x - w/2,y + h/2, w,h)
-        self.southwest = Quadtree(sw,self.capacity);
+        ne = Rectangle(x + w/2, y + h/2, w, h)
+        self.quads[1] = Quadtree(ne, G= self.G, theta_=self.theta_, n=self.capacity)
+        nw = Rectangle(x - w/2, y + h/2, w, h)
+        self.quads[0] = Quadtree(nw, G= self.G, theta_=self.theta_, n=self.capacity)
+        se = Rectangle(x + w/2, y - h/2, w, h)
+        self.quads[3] = Quadtree(se, G= self.G, theta_=self.theta_, n=self.capacity)
+        sw = Rectangle(x - w/2, y - h/2, w, h)
+        self.quads[2] = Quadtree(sw, G= self.G, theta_=self.theta_, n=self.capacity)
 
         self.divided = True
 
-    def insert(self,point):
-
-        # If the point isn't in the boundary then stop!
-        if self.boundary.contains(point) != True:
-            return False
-
-        # Check if the number of points exceed the capacity
-        if len(self.points) < self.capacity:
-            # if the point does not exceed then add the point,
-            # to the list of points in the boundary
-            self.points.append(point)
-            return True
-        # If the number of points exceed the given capacity then
-        # subdivide the rectangular boundary into four parts
-
-        # subdivide boundary
-        if not self.divided:
-            self.subdivide()
-
-        return (self.northeast.insert(point) or
-        self.northwest.insert(point) or
-        self.southeast.insert(point) or
-        self.southwest.insert(point))
-
-
-    def query(self, boundary, found_points):
-        """Find points in the quadtree that lie within a boundary."""
-        if not self.boundary.intersects(boundary):
-            # if the domain of this node does not interesect the search
-            # region, we don't need to look in it for points.
-            return False
-
-        # Search this node's point to see if they lie within boundary
+        # Check if existing points contain in children:
         for point in self.points:
-            if boundary.contains(point):
-                found_points.append(point)
-        # if this node has children, search them too.
-        if self.divided:
-            self.northeast.query(boundary,found_points)
-            self.northwest.query(boundary,found_points)
-            self.southeast.query(boundary,found_points)
-            self.southwest.query(boundary,found_points)
-        return found_points
+            for quad in self.quads:
+                quad.insert(point)
 
-    def compute_mass_distribution(self):
 
-        if not self.divided:
-            for i in range(len(self.points)):
-                self.CenterOfMass_x += self.points[i].x*self.points[i].mass
-                self.CenterOfMass_y += self.points[i].y*self.points[i].mass
-                self.Mass += self.points[i].mass
-            return self.Mass, self.CenterOfMass_x/self.Mass, self.CenterOfMass_y/self.Mass
-
-        else:
-            # Compute the center of mass based on the masses
-            # of all child quadrants and the center of mass as
-            # the center of mass of the child quadrants weights with their mass
-
-            ne_mass,ne_com_x,ne_com_y = self.northeast.compute_mass_distribution()
-            nw_mass,nw_com_x,nw_com_y = self.northwest.compute_mass_distribution()
-            se_mass,se_com_x,se_com_y = self.southeast.compute_mass_distribution()
-            sw_mass,sw_com_x,sw_com_y = self.southwest.compute_mass_distribution()
-            self.Mass = ne_mass + nw_mass + se_mass + sw_mass
-            self.CenterOfMass_x = ne_mass*ne_com_x + nw_mass*nw_com_x + se_mass*se_com_x + sw_mass*se_com_x
-            self.CenterOfMass_y = ne_mass*ne_com_y + nw_mass*nw_com_y + se_mass*se_com_y + sw_mass*se_com_y
-
-            return self.Mass, self.CenterOfMass_x/self.Mass, self.CenterOfMass_y/self.Mass
-
-    def distance(self,x1,y1,x2,y2):
-        return (np.sqrt((x2-x1)**2 + (y2-y1)**2))
-
-    def calculate_force(self, point,G=0.1,theta=1.1):
+    def limit_reached(self):
         """
-        Call this function for each particle in each time step.
-        for example:
-            for particle in num_of_particles:
-                calculate_force(particle, G, theta)"""
-        force = 0
-        acc_x = 0
-        acc_y = 0
-        if len(self.points) <=self.capacity and len(self.points)!=0:
-            for i in range(len(self.points)):
-                if self.points[i].x != point.x and self.points[i].y != point.y:
-                    x_dist = self.points[i].x - point.x
-                    y_dist = self.points[i].y - point.y
-                    Rsq = x_dist**2 + y_dist**2
+        Checks the recursive limit and returns Boolean value
 
-                    a = G*self.points[i].mass/Rsq
-                    acc_x += a * x_dist/np.sqrt(Rsq)
-                    acc_y += a * y_dist/np.sqrt(Rsq)
-            return acc_x, acc_y
+        Returns: False (if limit not reached)
+        Returns: True (if limit reached (stop adding points))
+        """
+        threshold = 0.1
 
-        else:
-                mass_node, r_x,r_y = self.compute_mass_distribution()
-                x_dist = r_x - point.x
-                y_dist = r_y - point.y
-                r = np.sqrt(x_dist**2 + y_dist**2)
-                d = abs(self.north_edge - self.south_edge)
-                if d/r <theta:
-                    force += G*point.mass*mass_node/r**2
-                else:
-                    # Compute force on child node
-                    if self.divided:
-                        self.northwest.calculate_force(self, point)
-                        self.northeast.calculate_force(self, point)
-                        self.southwest.calculate_force(self, point)
-                        self.southeast.calculate_force(self, point)
-        acc = force/point.mass
-        dist = np.sqrt((point.x-self.CenterOfMass_x)**2+(point.y-self.CenterOfMass_y)**2)
-        acc_x = acc*abs(point.x - self.CenterOfMass_x)/dist
-        acc_y = acc*abs(point.y - self.CenterOfMass_y)/dist
-        return acc_x, acc_y
+        if self.boundary.w < threshold:
+            return True
 
-    def step(self,all_points,dt=0.1,G=0.1,theta=1.1):
-        """This function updates the position of the point w.r.t
-        all other particles
-        all_points: list of all Point objects"""
+        return False
 
-        for point in all_points:
-            point.x = point.x + point.vx*dt
-            point.y = point.y + point.vy*dt
+    def insert(self, point):
+        """
+        Insert a point in the quadtree.
 
-            acc_x, acc_y = self.calculate_force(point,G,theta)
-            point.vx = point.vx + acc_x*dt
-            point.vy = point.vy + acc_y*dt
-        return all_points
-
-
-    def show(self,axis):
-        self.boundary.show(axis)
+        Updates the mass and center of mass for each of the """
         if self.divided:
-            self.northeast.show(axis)
-            self.northwest.show(axis)
-            self.southeast.show(axis)
-            self.southwest.show(axis)
+            for quad in self.quads:
+                if quad.insert(point):
+                    self.points.append(point)
+                    self.mass = sum([p.mass for p in self.points])
+                    self.center_of_mass_x = sum([p.mass*p.x for p in self.points])
+                    self.center_of_mass_y = sum([p.mass*p.y for p in self.points])
+                    return True
+
+        # Check if the point is in Boundary
+        if self.boundary.contains(point):
+
+            if len(self.points) < self.capacity and not self.limit_reached():
+                self.points.append(point)
+                self.mass = point.mass
+                self.center_of_mass_x = point.x*point.mass
+                self.center_of_mass_y = point.y*point.mass
+                return True
+
+            self.points.append(point)
+            self.mass = sum([p.mass for p in self.points])
+            self.center_of_mass_x = sum([p.mass*p.x for p in self.points])
+            self.center_of_mass_y = sum([p.mass*p.y for p in self.points])
+
+            if not self.divided and not self.limit_reached():
+                self.subdivide()
+                for quad in self.quads:
+                    if len(quad.points) == 0:
+                        quad.insert(point)
+                        return True
+        else:
+            return False
+
+
+    def center_of_mass(self):
+        """
+        Returns (X, Y) for COM
+        """
+        return self.center_of_mass_x/self.mass, self.center_of_mass_y/self.mass
+
+    def calculate_force(self, point):
+        if self.mass == 0 :
+            #print("self.mass = 0")
+            return 0,0
+        if not self.divided:
+            #print("Not divided")
+            #print("Using point force calculations:")
+            return self._calculate_force_on_point(point)
+        else:
+            #print(f"It is divided.")
+            force_x, force_y = 0,0
+            for quad in self.quads:
+                #print(f"\nInspecting quad with {quad.boundary.x,quad.boundary.y} center")
+                if len(quad.points) != 0:
+                    if quad._should_use_approximation(point):
+                        #print("Using approximation")
+                        fx,fy = quad._calculate_force_on_point_approximation(point)
+                        force_x += fx
+                        force_y += fy
+                    else:
+                        #print("Not using approximation")
+                        fx, fy = quad.calculate_force(point)
+                        force_x += fx
+                        force_y += fy
+            #print(f"Force = {force_x, force_y}")
+            return force_x,force_y
+
+    def _calculate_force_on_point(self, point):
+        """Calculates the force on the point due to all other points in the quadtree"""
+        #print("Used point force calculation")
+        force_x, force_y = 0, 0
+        for other_point in self.points:
+            if other_point != point:
+                dx = other_point.x - point.x
+                dy = other_point.y - point.y
+                r = (dx ** 2 + dy ** 2) ** 0.5
+                if r == 0:
+                    continue
+                force = self.G * point.mass * other_point.mass / (r ** 2)
+                force_x += force * dx / r
+                force_y += force * dy / r
+        #print(f"force from using no approximation = {force_x,force_y}")
+        return force_x, force_y
+
+    def _calculate_force_on_point_approximation(self, point):
+        """Calculates the force on the point due to the center of mass of the quadtree"""
+        com_x,com_y = self.center_of_mass()
+        #print(f"used approximation function: \n center of mass = {com_x,com_y}")
+        dx = com_x - point.x
+        dy = com_y - point.y
+        r = (dx ** 2 + dy ** 2) ** 0.5
+        if r == 0:
+            return 0, 0
+        force = self.G * point.mass * self.mass / (r ** 2)
+        #print(f"Force from approximation: {force*dx/r,force*dy/r}")
+        return force * dx / r, force * dy / r
+
+    def _should_use_approximation(self, point):
+        com_x, com_y = self.center_of_mass()
+        """Determines whether to use the approximation or not"""
+        r = ((point.x - com_x)**2 + (point.y - com_y)**2)**0.5
+        if r ==0 or len(self.points)==0:
+            return False
+        #print(f"self.boundary.w = {self.boundary.w} and self.theta = {self.theta_} \n ratio = {self.boundary.w/r}")
+        return self.boundary.w / r < self.theta_
+
+
+    def clear(self):
+        """
+        Clears the quadtree by resetting all points and sub-quadrants
+        """
+        self.points = []
+        self.mass = 0.0
+        self.center_of_mass_x = 0
+        self.center_of_mass_y = 0
+        self.divided = False
+        self.quads = [None, None, None, None]
+
+    def show(self, axis=None,show_entire=False):
+        """
+        Shows the quadtree
+
+        Will use plt.gca() if no axis is given.
+
+        show_entire = will also plot quadrants without any points (default = False)"""
+        if axis == None:
+            axis = plt.gca()
+        if not show_entire:
+            if len(self.points)!=0:
+                self.boundary.show(axis)
+                if self.divided:
+                    for quad in self.quads:
+                        quad.show(axis)
+        else:
+            self.boundary.show(axis)
+            if self.divided:
+                for quad in self.quads:
+                    quad.show(axis)
+
+    def show_from_point(self, point, axis=None, show_mass = False, color='red'):
+        """Shows the quadtree w.r.t given point. Uses Barnes Hut algorithm.
+        put temp =1
+        """
+        if axis==None:
+            axis=plt.gca()
+
+        # create a qt for com
+        com_qt = self.create_quadtree()
+        if self.mass == 0 :
+            # do not insert
+            pass
+        if not self.divided:
+            # insert point
+            for p in self.points:
+                if p != point:
+                    x,y = self.center_of_mass()
+                    com_mass = self.mass
+                    com_point = Point(x,y,mass=com_mass)
+                    com_qt.insert(com_point)
+                    #com_qt.insert(p)
+        else:
+            for quad in self.quads:
+                if len(quad.points) != 0:
+                    if quad._should_use_approximation(point):
+                        x,y = quad.center_of_mass()
+                        com_mass = quad.mass
+                        com_point = Point(x,y,mass=com_mass)
+                        com_qt.insert(com_point)
+                    else:
+                        #print("Not using approximation")
+                        quad.show_from_point(point,axis)
+                        quad.insert(point)
+        if show_mass:
+            px,py = [],[]
+            print(com_qt.points)
+            for p in com_qt.points:
+                print(p)
+                px.append(p.x)
+                py.append(p.y)
+            axis.scatter(px,py,c='brown',s=100)
+        com_qt.show(axis)
