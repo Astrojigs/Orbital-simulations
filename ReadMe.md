@@ -1,3 +1,11 @@
+# Huge Update Coming in few days:
+
+*Whats new: Barnes Hut Algorithm implementation to simulation.*
+
+**Glance of the Update.**
+
+![dual_display_quadtree](https://github.com/Astrojigs/Orbital-simulations/blob/main/Outputs/GIF/Barnes_hut_dual_gif.gif)
+
 ![potential2](https://user-images.githubusercontent.com/63223240/129400476-a19e9813-5a4c-4e5e-918f-af313ea31a9d.gif)
 
 
