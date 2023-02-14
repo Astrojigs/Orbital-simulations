@@ -1,9 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 from IPython.display import clear_output
 import math
-import matplotlib.colors as mcolors
 
 
 class Point:
@@ -17,7 +15,9 @@ class Point:
         vx = velocity x_component (default = 0),
         vy = velocity y_component (default = 0),
         acc_x = acceleration x_component (default = 0),
-        acc_y = acceleration y_component (default = 0)"""
+        acc_y = acceleration y_component (default = 0)
+        """
+
         self.x = x
         self.y = y
         self.mass = mass
@@ -63,17 +63,23 @@ class Rectangle:
         self.north_edge, self.south_edge = y + h/2, y - h/2
 
     def contains(self,point):
+        """
+        Check if point exists within boundary.
+        """
         return (point.x >= self.west_edge and point.x <= self.east_edge and
         point.y <= self.north_edge and point.y >= self.south_edge)
 
-    def intersects(self,other):
-        """Does the other Rectangle object intersect with this one?"""
-        return not (other.west_edge > self.east_edge or
-                    other.east_edge < self.west_edge or
-                    other.north_edge > self.south_edge or
-                    other.south_edge < self.north_edge)
-
     def show(self, axis,color='red'):
+        """
+        Shows the rectangle boundary.
+        Default color : red
+
+        Details:
+        Uses axis.plot() method to plot the boundary.
+        If axis = None then uses plt.gca()
+        """
+        if axis == None:
+            axis = plt.gca()
         x1, y1 = self.west_edge,self.north_edge
         x2, y2 = self.east_edge, self.south_edge
         axis.plot([x1,x2,x2,x1,x1],[y1,y1,y2,y2,y1], c=color, lw=1)
@@ -81,20 +87,22 @@ class Rectangle:
 
 
 class Quadtree:
-
+    """
+    Create a quadtree in the given Boundary (`Rectangle` object).
+    """
     def __init__(self,boundary, G,theta_, n = 1):
         """
-        Creates a Quadtree:
+        Parameters:
+
         boundary: Rectangle instance
         n = capacity
             choosing n = 1, i.e. if particle number crosses 1 than sub-divide
         G = gravitational constant
-        theta_ = barnes hut algo theta (default value = 1)
+        theta_ = barnes hut algorithm theta (default value = 1)
         """
         self.boundary = boundary
 
         # choosing capacity(n) = 1, i.e. if particle number crosses 1 than sub-divide
-        # When do i choose that i need to sub-divide
         self.capacity = n
 
         # Keep track of points:
@@ -117,7 +125,7 @@ class Quadtree:
         """
         Subdivides the region into four parts
                1  |  2
-             ____ |____
+             _____|____
                   |
                3  |  4
 
@@ -125,6 +133,7 @@ class Quadtree:
                quad[1] = 2nd quadrant (north east)
                quad[2] = 3rd quadrant (south west)
                quad[3] = 4th quadrant (south east)
+
         """
         x = self.boundary.x
         y = self.boundary.y
@@ -166,7 +175,19 @@ class Quadtree:
         """
         Insert a point in the quadtree.
 
-        Updates the mass and center of mass for each of the """
+        Details:
+        Each quadrant in the quadtree is assigned a list that contains
+         all point objects that lie within its boundary.
+         While calling qt.insert(), the following logic flow is operated:
+
+         if quadrant is divided:
+             check each of the 4 children/node.
+             if the point is insert in the child:
+                 1) Update the list of the parent quadrant by adding the inserted point.
+                 2) Update the center of mass of the parent quadrant
+             if point is in boundary:
+                 if
+                 """
         if self.divided:
             for quad in self.quads:
                 if quad.insert(point):
@@ -348,3 +369,108 @@ class Quadtree:
                 py.append(p.y)
             axis.scatter(px,py,c='brown',s=100)
         com_qt.show(axis)
+
+def get_cart_coords(r,theta):
+    """
+    Convert r, theta to x,y
+    """
+    return r*np.cos(np.deg2rad(theta)), r*np.sin(np.deg2rad(theta))
+
+def get_cart_coords_vel(rv, thetav, r, theta):
+    """
+    Convert velocities:
+    [dr/dt, dtheta/dt] to [dx/dt,dy/dt]
+    """
+    vx = rv*np.cos(np.deg2rad(theta)) - r*np.sin(np.deg2rad(theta))*thetav
+    vy = rv*np.sin(np.deg2rad(theta)) + r*np.cos(np.deg2rad(theta))*thetav
+    return vx, vy
+
+def barnes_hut_sim(points, _wrap_points=False,
+                   dt=1, g_const=0, theta=1,
+                   save_to_video = False,
+                   show_quadtree=False, show_quadtree_wrt_point = None,
+                  n_frames=50, add_quadtree_plot=False):
+    """
+    Output: Refreshing plot of points being simulated using Barnes-Hut Algorithm.
+
+    points = A list of "Point class" objects.
+
+    _wrap_points = Wraps the points if they go out of bound.
+
+
+    """
+    def wrap_point(p):
+        """
+        Wraps the points such that they don't leave the boundary.
+        """
+        # wrap around when the particle goes out of bounds
+        if p.x > width:
+            p.x -= width
+        elif p.x < 0:
+            p.x += width
+        if p.y > height:
+            p.y -= height
+        elif p.y < 0:
+            p.y += height
+
+    qt = Quadtree(boundary,n=1, G=g_const, theta_=theta)
+    for p in points:
+        qt.insert(p)
+    frames = []
+
+    for time in range(n_frames):
+        if not add_quadtree_plot:
+            fig, ax = plt.subplots(figsize=(10,10))
+        else:
+            fig,ax = plt.subplots(1,2,figsize=(15,7))
+        ps = []
+        qt.clear()
+
+        for p in points:
+            if _wrap_points:
+                wrap_point(p)
+
+            p.update_position(qt,dt=dt)
+            qt.insert(p)
+
+            ps.append([p.x,p.y])
+
+        ps = np.array(ps)
+
+
+        if not add_quadtree_plot:
+            ax.scatter(points[0].x,points[0].y,c='orange',s=40)
+            ax.scatter(ps[:,0],ps[:,1],s=1,alpha=0.5,c='black')
+            ax.set_xlim(-width*0.1, width*1.1)
+            ax.set_ylim(-height*0.1, height*1.1)
+
+        else:
+            ax[0].scatter(ps[:,0],ps[:,1],s=10,alpha=0.5,c='black')
+            ax[0].set_xlim(-width*0.1, width*1.1)
+            ax[0].set_ylim(-height*0.1, height*1.1)
+            show_quadtree = False
+            ax[1].scatter(ps[:,0],ps[:,1],s=10,alpha=0.5,c='black')
+            ax[1].set_xlim(-width*0.1, width*1.1)
+            ax[1].set_ylim(-height*0.1, height*1.1)
+            qt.show(ax[1])
+
+        if show_quadtree:
+            # Show the quadtree
+            qt.show(ax)
+        if show_quadtree_wrt_point != None:
+            qt.show_from_point(show_quadtree_wrt_point, ax)
+            ax.scatter(show_quadtree_wrt_point.x,show_quadtree_wrt_point.y,s=50,c='orange')
+        # Convert the figure to a numpy array
+        if save_to_video:
+            fig.canvas.draw()
+            data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+            data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+            frames.append(data)
+
+
+        #plt.show()
+        print(f"frame: {time}/{n_frames}")
+        clear_output(wait=True)
+    if save_to_video:
+        import imageio
+        imageio.mimsave(save_to_video, frames, 'MP4', fps=120)
