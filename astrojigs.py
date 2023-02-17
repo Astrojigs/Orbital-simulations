@@ -1,8 +1,31 @@
+"""
+Property Of Jigar Patel
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from IPython.display import clear_output
 import math
+import astropy
+from astropy import constants as astropy_constants
 
+class constants:
+    """
+    Stores constants
+
+    constants.info() : gives information about each term in units being used:
+
+    Use the following terms in the corresponding 1 unit:
+    
+    distance : 1 Light year
+    time : 1 Million year
+    Mass : Solar Masses
+    G : 0.156079 ly^3/(solar_mass x million_year^2)
+    """
+
+    G = astropy_constants.G.to_value((astropy.units.lyr.decompose())**3/((astropy.units.M_sun.decompose())*(np.square((1000000*astropy.units.yr).decompose()))))
+    def info():
+        print("distance : 1 Light year\ntime : 1 Million year\nMass : Solar Masses\nG : 0.156079 ly^3/(solar_mass x million_year^2)")
 
 class Point:
     """
@@ -177,12 +200,12 @@ class Quadtree:
 
         Details:
         Each quadrant in the quadtree is assigned a list that contains
-         all point objects that lie within its boundary.
+         all point-objects that lie within its boundary.
          While calling qt.insert(), the following logic flow is operated:
 
          if quadrant is divided:
              check each of the 4 children/node.
-             if the point is insert in the child:
+             if the point is inserted in the child:
                  1) Update the list of the parent quadrant by adding the inserted point.
                  2) Update the center of mass of the parent quadrant
              if point is in boundary:
@@ -286,8 +309,15 @@ class Quadtree:
         return force * dx / r, force * dy / r
 
     def _should_use_approximation(self, point):
+        """
+        Barnes Hut Algorithm condition.
+        Returns: w/r < theta_.
+        Details:
+        w = width of the quadrant
+        r is the distance from the point to the COM of quadrant.
+
+        """
         com_x, com_y = self.center_of_mass()
-        """Determines whether to use the approximation or not"""
         r = ((point.x - com_x)**2 + (point.y - com_y)**2)**0.5
         if r ==0 or len(self.points)==0:
             return False
