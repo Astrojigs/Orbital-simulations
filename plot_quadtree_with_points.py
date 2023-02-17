@@ -22,5 +22,4 @@ for p in points:
 
 plt.scatter([p.x for p in points],[p.y for p in points],s=5)
 qt.show()
-print(len(qt.quads[0].points))
 plt.show()

@@ -16,7 +16,7 @@ class constants:
     constants.info() : gives information about each term in units being used:
 
     Use the following terms in the corresponding 1 unit:
-    
+
     distance : 1 Light year
     time : 1 Million year
     Mass : Solar Masses
@@ -209,7 +209,17 @@ class Quadtree:
                  1) Update the list of the parent quadrant by adding the inserted point.
                  2) Update the center of mass of the parent quadrant
              if point is in boundary:
-                 if
+                 if nothing in the quadrant:
+                     update the quadrant.mass = point.mass
+                     update the COM_x = point.mass*point.x
+                     update the COM_y = point.mass*point.y
+                     return True
+                if Point already exists then:
+                    COM_x += point.mass*point.x
+                    COM_y += point.mass*point.y
+
+
+
                  """
         if self.divided:
             for quad in self.quads:
@@ -504,3 +514,26 @@ def barnes_hut_sim(points, _wrap_points=False,
     if save_to_video:
         import imageio
         imageio.mimsave(save_to_video, frames, 'MP4', fps=120)
+
+def plummer_density_profile_with_mass(n, r_scale, mass,G, center=(0, 0)):
+    """
+    Returns x and y coordinates, and x and y velocities of n stars using the Plummer density profile with mass
+
+    Parameters:
+    n (int): Number of stars to generate
+    r_scale (float): Scale radius of the Plummer density profile
+    mass (float): Mass of the central object
+    center (tuple): (x, y) position of the center of the Plummer sphere
+
+    Returns:
+    x, y, vx, vy (np.ndarray): x and y coordinates, and x and y velocities of the stars
+    """
+    r = np.random.uniform(0, r_scale, n)
+    theta = np.random.uniform(0, 2 * np.pi, n)
+    x = center[0] + r * np.cos(theta) / (1 + (r/r_scale)**2)**0.5
+    y = center[1] + r * np.sin(theta) / (1 + (r/r_scale)**2)**0.5
+    v_circ = (G * mass / r)**0.5
+    vx = v_circ * np.sin(theta)
+    vy = -1 * v_circ * np.cos(theta)
+    return x, y, vx, vy
+    
