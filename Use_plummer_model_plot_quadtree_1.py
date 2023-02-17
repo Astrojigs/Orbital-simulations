@@ -18,7 +18,7 @@ points = []
 The rest of the stars will have masses ranging from 0.4, 1.8 solar masses."""
 blackhole_point = Point(x=center_x,y=center_y, mass=1e4)
 points.append(blackhole_point)
-x,y,vx,vy = astrojigs.plummer_density_profile_with_mass(n=10000,r_scale=width*0.70,mass=blackhole_point.mass,G=astrojigs.constants.G,center=(center_x,center_y))
+x,y,vx,vy = astrojigs.plummer_density_profile_with_mass(n=1000,r_scale=width*0.70,mass=blackhole_point.mass,G=astrojigs.constants.G,center=(center_x,center_y))
 for i in range(len(x)):
     points.append(Point(x[i], y[i],
                         mass = np.random.uniform(0.4,1.8),
