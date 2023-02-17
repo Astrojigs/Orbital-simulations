@@ -536,4 +536,3 @@ def plummer_density_profile_with_mass(n, r_scale, mass,G, center=(0, 0)):
     vx = v_circ * np.sin(theta)
     vy = -1 * v_circ * np.cos(theta)
     return x, y, vx, vy
-    
