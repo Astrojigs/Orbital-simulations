@@ -139,6 +139,7 @@ class Quadtree:
         self.center_of_mass_y = 0.0
 
 
+
     def create_quadtree(self):
         """
         Returns a new quadtree"""
@@ -361,22 +362,22 @@ class Quadtree:
                 if self.divided:
                     for quad in self.quads:
                         quad.show(axis)
-        else:
+        elif show_entire:
             self.boundary.show(axis)
             if self.divided:
                 for quad in self.quads:
-                    quad.show(axis)
+                    quad.show(axis,show_entire=True)
 
     def show_from_point(self, point, axis=None, show_mass = False, color='red'):
         """Shows the quadtree w.r.t given point. Uses Barnes Hut algorithm.
-        put temp =1
+        put temp = 1
         """
         if axis==None:
             axis=plt.gca()
 
         # create a qt for com
         com_qt = self.create_quadtree()
-        if self.mass == 0 :
+        if self.mass == 0:
             # do not insert
             pass
         if not self.divided:
