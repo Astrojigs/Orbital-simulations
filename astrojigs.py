@@ -431,13 +431,6 @@ def barnes_hut_sim(points, _wrap_points=False,
                    show_quadtree=False, show_quadtree_wrt_point = None,
                   n_frames=50, add_quadtree_plot=False):
     """
-    Output: Refreshing plot of points being simulated using Barnes-Hut Algorithm.
-
-    points = A list of "Point class" objects.
-
-    _wrap_points = Wraps the points if they go out of bound.
-
-
     """
     def wrap_point(p):
         """
@@ -462,7 +455,7 @@ def barnes_hut_sim(points, _wrap_points=False,
         if not add_quadtree_plot:
             fig, ax = plt.subplots(figsize=(10,10))
         else:
-            fig,ax = plt.subplots(1,2,figsize=(15,7))
+            fig, ax = plt.subplots(1,2,figsize=(15,7))
         ps = []
         qt.clear()
 
@@ -513,7 +506,7 @@ def barnes_hut_sim(points, _wrap_points=False,
         clear_output(wait=True)
     if save_to_video:
         import imageio
-        imageio.mimsave(save_to_video, frames, 'MP4', fps=120)
+        imageio.mimsave(save_to_video, frames, 'MP4', fps=30)
 
 def plummer_density_profile_with_mass(n, r_scale, mass,G, center=(0, 0)):
     """
