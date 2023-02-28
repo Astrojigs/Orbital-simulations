@@ -236,9 +236,9 @@ class Quadtree:
 
             if len(self.points) < self.capacity and not self.limit_reached():
                 self.points.append(point)
-                self.mass = point.mass
-                self.center_of_mass_x = point.x*point.mass
-                self.center_of_mass_y = point.y*point.mass
+                self.mass += point.mass
+                self.center_of_mass_x += point.x*point.mass
+                self.center_of_mass_y += point.y*point.mass
                 return True
 
             self.points.append(point)
