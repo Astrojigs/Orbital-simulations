@@ -1,4 +1,34 @@
-# Huge Update Coming in few days:
+
+# Barnes Hut Algorithm 🤖
+Welcome to the world of Barnes Hut Algorithm! This repository contains the code and documentation for the Barnes Hut Algorithm, a popular and powerful method for approximating the forces acting on a large number of particles in a three-dimensional space.
+
+## What is Barnes Hut Algorithm?
+Barnes Hut Algorithm is a clever method for simulating the behavior of a large number of particles in a three-dimensional space. It's commonly used in computational physics and astrophysics to model the motion of celestial bodies such as stars and planets. The algorithm uses a quadtree or octree data structure to divide the space into smaller regions, and approximates the forces acting on each particle by considering the forces acting on groups of particles in nearby regions. This allows the algorithm to achieve high accuracy while significantly reducing the computational cost.
+
+## Why use Barnes Hut Algorithm?
+There are several advantages to using Barnes Hut Algorithm over other methods for simulating particle interactions:
+
+* **Efficiency**: Barnes Hut Algorithm can simulate the behavior of a large number of particles in a much shorter amount of time than other methods, making it ideal for large-scale simulations.
+* **Accuracy**: Despite its speed, Barnes Hut Algorithm can produce highly accurate results that are comparable to other, more computationally-intensive methods.
+* **Flexibility**: The algorithm can be customized and modified to suit a wide range of applications in physics, astrophysics, and other fields.
+
+# How to use this repository
+This repository contains the code for the Barnes Hut Algorithm, along with documentation and examples to help you get started. Here's a brief overview of what you'll find in each directory:
+
+`src`: This directory contains the source code for the Barnes Hut Algorithm, written in Python.
+examples: This directory contains examples of how to use the Barnes Hut Algorithm to simulate various systems of particles, such as a simple two-body system or a complex galaxy cluster.
+`docs`: This directory contains the documentation for the Barnes Hut Algorithm, including a user guide and technical reference.
+Getting started
+To get started with Barnes Hut Algorithm, simply clone this repository to your local machine and follow the instructions in the docs directory to set up and run the code. The examples directory also contains several Jupyter notebooks that walk you through how to use the algorithm to simulate different systems of particles.
+
+## Contributing
+If you'd like to contribute to Barnes Hut Algorithm, we welcome your contributions! You can submit bug reports, feature requests, or pull requests through GitHub.
+
+## License
+This code is released under the MIT License, which means you are free to use, modify, and distribute it as long as you include the original license in your distribution.
+
+## Acknowledgments
+I'd like to thank the original creators of Barnes Hut Algorithm for developing such a powerful and useful method for simulating particle interactions. I'd also like to thank the open-source community for their contributions to this project, as well as the developers of the various libraries and tools used in this code. Last but not the least thanks to [@iamstarstuff](https://github.com/iamstarstuff) for supporting me through multiple blocks during the way.
 
 *Whats new: Barnes Hut Algorithm implementation to simulation.*
 
