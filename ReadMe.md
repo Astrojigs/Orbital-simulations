@@ -21,13 +21,13 @@ examples: This directory contains examples of how to use the Barnes Hut Algorith
 Getting started
 To get started with Barnes Hut Algorithm, simply clone this repository to your local machine and follow the instructions in the docs directory to set up and run the code. The examples directory also contains several Jupyter notebooks that walk you through how to use the algorithm to simulate different systems of particles.
 
-Contributing
+## Contributing
 If you'd like to contribute to Barnes Hut Algorithm, we welcome your contributions! You can submit bug reports, feature requests, or pull requests through GitHub.
 
-License
+## License
 This code is released under the MIT License, which means you are free to use, modify, and distribute it as long as you include the original license in your distribution.
 
-Acknowledgments
+## Acknowledgments
 I'd like to thank the original creators of Barnes Hut Algorithm for developing such a powerful and useful method for simulating particle interactions. I'd also like to thank the open-source community for their contributions to this project, as well as the developers of the various libraries and tools used in this code. Last but not the least thanks to [@iamstarstuff](https://github.com/iamstarstuff) for supporting me through multiple blocks during the way.
 
 *Whats new: Barnes Hut Algorithm implementation to simulation.*
