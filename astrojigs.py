@@ -121,7 +121,7 @@ class Quadtree:
         n = capacity
             choosing n = 1, i.e. if particle number crosses 1 than sub-divide
         G = gravitational constant
-        theta_ = barnes hut algorithm theta (default value = 1)
+        theta_ = barnes hut algorithm theta (recommended value = 0.85)
         """
         self.boundary = boundary
 
@@ -183,10 +183,13 @@ class Quadtree:
 
     def limit_reached(self):
         """
-        Checks the recursive limit and returns Boolean value
+        Checks the recursive limit and returns a Boolean value
 
         Returns: False (if limit not reached)
         Returns: True (if limit reached (stop adding points))
+
+        Checks if width of the quadrant has become less than threshold. if so,
+        return True. False, otherwise.
         """
         threshold = 0.1
 
