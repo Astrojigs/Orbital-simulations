@@ -197,31 +197,28 @@ class Quadtree:
 
     def insert(self, point):
         """
-        Insert a point in the quadtree.
+        Inserts a point into the quadtree.
 
-        Details:
-        Each quadrant in the quadtree is assigned a list that contains
-         all point-objects that lie within its boundary.
-         While calling qt.insert(), the following logic flow is operated:
+        Args:
+            point (Point): The point to be inserted into the quadtree.
 
-         if quadrant is divided:
-             check each of the 4 children/node.
-             if the point is inserted in the child:
-                 1) Update the list of the parent quadrant by adding the inserted point.
-                 2) Update the center of mass of the parent quadrant
-             if point is in boundary:
-                 if nothing in the quadrant:
-                     update the quadrant.mass = point.mass
-                     update the COM_x = point.mass*point.x
-                     update the COM_y = point.mass*point.y
-                     return True
-                if Point already exists then:
-                    COM_x += point.mass*point.x
-                    COM_y += point.mass*point.y
+        Returns:
+            bool: True if the insertion is successful, False otherwise.
 
+        If the quadtree has already been divided into four quadrants, the function will recursively
+        attempt to insert the point into each of the four quadrants until it finds a quadrant that can
+        accommodate the point. If the insertion is successful, the point is added to the quadtree and
+        the mass and center of mass are updated accordingly.
 
+        If the quadtree has not been divided yet and the point is within the quadtree boundary,
+        the function will attempt to add the point to the current quadrant. If the quadrant is not
+        already at capacity, the point will be added and the mass and center of mass will be updated
+        accordingly. If the quadrant is at capacity, the quadrant will be subdivided into four
+        smaller quadrants, and the point will be inserted into the appropriate quadrant.
 
-                 """
+        If the point is outside of the quadtree boundary, the function returns False.
+
+        """
         if self.divided:
             for quad in self.quads:
                 if quad.insert(point):
