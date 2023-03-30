@@ -18,14 +18,19 @@ In this implementation, the Barnes-Hut Algorithm is implemented using a quadtree
 ## The `astrojigs.py` file
 The `astrojigs.py` file contains all the important classes and functions needed to simulate particles using the Barnes-Hut Algorithm. Users can import this file to create their own simulations.
 
-Point class
-The Point class creates a point in space with position and velocity vectors.
+`Point` class
 
-Rectangle class
-The Rectangle class creates a boundary within which a quadtree can function. It is used to define the simulation space and the boundaries of each node in the quadtree.
+The `Point` class creates a point in space with position and velocity vectors.
 
-Quadtree class
-The Quadtree class creates a quadtree within the desired boundary. It is used to store particles and calculate the gravitational forces between them.
+`Rectangle` class
+
+The `Rectangle` class creates a boundary within which a quadtree can function. It is used to define the simulation space and the boundaries of each node in the quadtree.
+
+`Quadtree` class
+
+The `Quadtree` class creates a quadtree within the desired boundary. It is used to store particles and calculate the gravitational forces between them.
+
+## [Instructions and examples on how to use `astrojigs.py`.](https://github.com/Astrojigs/Orbital-simulations/blob/main/Examples/Using%20astrojigs%20file.ipynb)
 
 ## Contributing
 If you'd like to contribute to Barnes Hut Algorithm, we welcome your contributions! You can submit bug reports, feature requests, or pull requests through GitHub.
