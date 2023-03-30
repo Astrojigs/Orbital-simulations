@@ -12,14 +12,20 @@ There are several advantages to using Barnes Hut Algorithm over other methods fo
 * **Accuracy**: Despite its speed, Barnes Hut Algorithm can produce highly accurate results that are comparable to other, more computationally-intensive methods.
 * **Flexibility**: The algorithm can be customized and modified to suit a wide range of applications in physics, astrophysics, and other fields.
 
-# How to use this repository
-This repository contains the code for the Barnes Hut Algorithm, along with documentation and examples to help you get started. Here's a brief overview of what you'll find in each directory:
+# How is the Barnes-Hut Algorithm implemented in this repository?
+In this implementation, the Barnes-Hut Algorithm is implemented using a quadtree data structure. The particles are inserted into the quadtree based on their position, and each node of the tree stores the total mass and center of mass of the particles in its sub-tree. This allows for an approximate calculation of the gravitational force acting on each particle, reducing the overall computational complexity of the simulation.
 
-`src`: This directory contains the source code for the Barnes Hut Algorithm, written in Python.
-examples: This directory contains examples of how to use the Barnes Hut Algorithm to simulate various systems of particles, such as a simple two-body system or a complex galaxy cluster.
-`docs`: This directory contains the documentation for the Barnes Hut Algorithm, including a user guide and technical reference.
-Getting started
-To get started with Barnes Hut Algorithm, simply clone this repository to your local machine and follow the instructions in the docs directory to set up and run the code. The examples directory also contains several Jupyter notebooks that walk you through how to use the algorithm to simulate different systems of particles.
+## The `astrojigs.py` file
+The `astrojigs.py` file contains all the important classes and functions needed to simulate particles using the Barnes-Hut Algorithm. Users can import this file to create their own simulations.
+
+Point class
+The Point class creates a point in space with position and velocity vectors.
+
+Rectangle class
+The Rectangle class creates a boundary within which a quadtree can function. It is used to define the simulation space and the boundaries of each node in the quadtree.
+
+Quadtree class
+The Quadtree class creates a quadtree within the desired boundary. It is used to store particles and calculate the gravitational forces between them.
 
 ## Contributing
 If you'd like to contribute to Barnes Hut Algorithm, we welcome your contributions! You can submit bug reports, feature requests, or pull requests through GitHub.
