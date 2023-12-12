@@ -262,6 +262,12 @@ class Quadtree:
         """
         return self.center_of_mass_x/self.mass, self.center_of_mass_y/self.mass
 
+    def plot_com(self):
+        """
+        Plots the center of mass
+        Use only in case of `self.show_from_point()` please.
+
+        """
     def calculate_force(self, point):
         if self.mass == 0 :
             #print("self.mass = 0")
@@ -378,7 +384,7 @@ class Quadtree:
         # create a qt for com
         com_qt = self.create_quadtree()
         if self.mass == 0:
-            # do not insert
+            # do not insert (fix this part. (last checked: 8th June 2023))
             pass
         if not self.divided:
             # insert point
@@ -390,8 +396,8 @@ class Quadtree:
                     com_qt.insert(com_point)
                     #com_qt.insert(p)
         else:
-            for quad in self.quads:
-                if len(quad.points) != 0:
+            for quad in self.quads: # check every quadrant
+                if len(quad.points) != 0: # if points exist, then run the following
                     if quad._should_use_approximation(point):
                         x,y = quad.center_of_mass()
                         com_mass = quad.mass
@@ -403,9 +409,7 @@ class Quadtree:
                         quad.insert(point)
         if show_mass:
             px,py = [],[]
-            print(com_qt.points)
             for p in com_qt.points:
-                print(p)
                 px.append(p.x)
                 py.append(p.y)
             axis.scatter(px,py,c='brown',s=100)
