@@ -269,9 +269,11 @@ def barnes_hut_sim(points, width, height, dt=1, g_const=0.1, theta=0.85, n_frame
         frame = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
         if save_to_video:
             out.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
-        plt.close(fig)
-        clear_output(wait=True)
+        # plt.close(fig)
+        plt.show()
         print(f"Frame: {time}/{n_frames}")
+        
+        clear_output(wait=True)
 
     if save_to_video:
         out.release()
