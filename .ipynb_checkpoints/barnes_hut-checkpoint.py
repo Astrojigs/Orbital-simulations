@@ -1,5 +1,5 @@
 """
-astrojigs.py — Barnes–Hut N-body simulation (2D)
+barnes_hut.py — Barnes–Hut N-body simulation (2D)
 
 This module simulates self-gravitating particles in 2D using a Quadtree-based
 Barnes–Hut approximation. It includes:
@@ -361,6 +361,8 @@ def _compute_accelerations(points: List[Point], tree: Quadtree) -> Tuple[np.ndar
 
 def barnes_hut_sim(points: List[Point],
                    *,
+                   point_size:int = 10,
+                   point_color:str = 'black',
                    dt: float = 1.0,
                    G: float = 0.1,
                    theta: float = 0.6,
@@ -453,7 +455,7 @@ def barnes_hut_sim(points: List[Point],
         fig, axp = plt.subplots(figsize=(10, 10))
         xs = [p.x for p in points]
         ys = [p.y for p in points]
-        axp.scatter(xs, ys, s=10, c="black")
+        axp.scatter(xs, ys, s=point_size, c=point_color)
 
         if draw_quadtree:
             tree.draw(axp)
