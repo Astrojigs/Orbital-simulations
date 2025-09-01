@@ -15,8 +15,8 @@ There are several advantages to using Barnes Hut Algorithm over other methods fo
 # How is the Barnes-Hut Algorithm implemented in this repository?
 In this implementation, the Barnes-Hut Algorithm is implemented using a quadtree data structure. The particles are inserted into the quadtree based on their position, and each node of the tree stores the total mass and center of mass of the particles in its sub-tree. This allows for an approximate calculation of the gravitational force acting on each particle, reducing the overall computational complexity of the simulation.
 
-## The `astrojigs.py` file
-The `astrojigs.py` file contains all the important classes and functions needed to simulate particles using the Barnes-Hut Algorithm. Users can import this file to create their own simulations.
+## The `barnes_hut.py` file
+The `barnes_hut.py` file contains all the important classes and functions needed to simulate particles using the Barnes-Hut Algorithm. Users can import this file to create their own simulations.
 
 `Point` class
 
@@ -30,7 +30,7 @@ The `Rectangle` class creates a boundary within which a quadtree can function. I
 
 The `Quadtree` class creates a quadtree within the desired boundary. It is used to store particles and calculate the gravitational forces between them.
 
-## [Instructions and examples on how to use `astrojigs.py`.](https://github.com/Astrojigs/Orbital-simulations/blob/main/Examples/Using%20astrojigs%20file.ipynb)
+## [Instructions and examples on how to use `barnes_hut.py`.](https://github.com/Astrojigs/Orbital-simulations/blob/main/Examples/Using%20astrojigs%20file.ipynb)
 
 ## Contributing
 If you'd like to contribute to Barnes Hut Algorithm, we welcome your contributions! You can submit bug reports, feature requests, or pull requests through GitHub.
